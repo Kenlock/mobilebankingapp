@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobilebanking/business_logic/models/general_response.dart';
+import 'package:mobilebanking/services/auth/auth_service.dart';
+import 'package:mobilebanking/services/service_locator.dart';
 import 'package:mobilebanking/ui/widgets/MyIcon.dart';
 import 'package:mobilebanking/utils/urls.dart';
 
@@ -8,12 +11,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  AuthService authService;
+
   TextEditingController _usernameController;
   TextEditingController _passwordController;
   bool rememberMe;
   @override
   void initState() {
-    
+    authService = serviceLocator.get<AuthService>();
     _usernameController = TextEditingController();
     _passwordController = TextEditingController();
     setState(() {
@@ -245,9 +250,23 @@ class _LoginScreenState extends State<LoginScreen> {
         ));
   }
 
-  void _submitLogin() {
-    print('username: $_usernameController.text');
-    Navigator.pushNamed(context, HOME_ROUTE);
+  void _submitLogin() async {
+    Map<String, dynamic> data = {
+      'username': _usernameController.text,
+      'password': _passwordController.text
+    };
+    print('login data: $data');
+    GeneralResponse response;
+    try {
+      response = await authService.login(data);
+      if(response.errCode == 0) {
+        
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    //Navigator.pushNamed(context, HOME_ROUTE);
   }
 
   void _handleIconClick() {

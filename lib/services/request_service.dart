@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_user_agent/flutter_user_agent.dart';
 import 'package:http/http.dart';
@@ -11,6 +12,7 @@ class RequestService {
   IOClient _http;
   String _ua;
   Map<String, dynamic> _headers;
+  String endpoint = 'https://quickapp.agricbank.com';
 
   RequestService();
 
@@ -24,7 +26,7 @@ class RequestService {
     _headers['Content-Type'] = 'application/json';
   }
 
-  Future<dynamic> post(
+  Future<Either<Exception, String>> post(
       {@required String url,
       @required Map<String, dynamic> body,
       tokenRequired = true}) async {
@@ -36,17 +38,13 @@ class RequestService {
       response = await _http
           .post(url, body: jsonBody, headers: _headers)
           .timeout(Duration(minutes: 1));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception(jsonDecode(response.body));
-      }
+      return Right(jsonEncode(response.body));
     } catch (e) {
-      throw Exception(jsonDecode(e));
+      return Left(e);
     }
   }
 
-  Future<dynamic> get(
+  Future<Either<Exception, String>> get(
       {@required String url,
       Map<String, dynamic> params,
       bool tokenRequired = true}) async {
@@ -60,17 +58,13 @@ class RequestService {
     try {
       response =
           await _http.get(url, headers: _headers).timeout(Duration(minutes: 1));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception(jsonDecode(response.body));
-      }
+      return Right(jsonEncode(response.body));
     } catch (e) {
-      throw Exception(jsonDecode(e));
+      return Left(e);
     }
   }
 
-  Future<dynamic> put({
+  Future<Either<Exception, String>> put({
     @required String url,
     @required Map<String, dynamic> body,
     bool tokenRequired = true,
@@ -83,17 +77,13 @@ class RequestService {
       response = await _http
           .put(url, body: jsonBody, headers: _headers)
           .timeout(Duration(minutes: 1));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception(jsonDecode(response.body));
-      }
+      return Right(jsonEncode(response.body));
     } catch (e) {
-      throw Exception(jsonDecode(e));
+      return Left(e);
     }
   }
 
-  Future<dynamic> delete({
+  Future<Either<Exception, String>> delete({
     @required String url,
     bool tokenRequired = true,
   }) async {
@@ -104,13 +94,9 @@ class RequestService {
       response = await _http
           .delete(url, headers: _headers)
           .timeout(Duration(minutes: 1));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception(jsonDecode(response.body));
-      }
+      return Right(response.body);
     } catch (e) {
-      throw Exception(jsonDecode(e));
+      return Left(e);
     }
   }
 }

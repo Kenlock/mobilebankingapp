@@ -1,5 +1,8 @@
+import 'package:dartz/dartz.dart';
+import 'package:mobilebanking/business_logic/models/general_response.dart';
+
 abstract class AuthService {
-  Future<dynamic> login(Map<String, dynamic> data);
-  Future<dynamic> logout();
-  Future<dynamic> forgotPassword();
+  Future<GeneralResponse> login(Map<String, dynamic> data);
+  Future<GeneralResponse> logout();
+  Future<GeneralResponse> forgotPassword();
 }

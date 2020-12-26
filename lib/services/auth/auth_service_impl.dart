@@ -1,32 +1,40 @@
+import 'package:mobilebanking/business_logic/models/general_response.dart';
+import 'package:mobilebanking/services/api_service.dart';
 import 'package:mobilebanking/services/auth/auth_service.dart';
-import 'package:mobilebanking/services/request_service.dart';
 import 'package:mobilebanking/services/service_locator.dart';
+import 'package:mobilebanking/services/utils/constants.dart';
 
 class AuthServiceImpl implements AuthService {
-  RequestService _requestApi;
+  ApiService _apiService = serviceLocator.get<ApiService>();
 
-  AuthServiceImpl() {
-    _requestApi = serviceLocator.get<RequestService>();
-  }
+  AuthServiceImpl() {}
 
   @override
-  Future forgotPassword() {
+  Future<GeneralResponse> forgotPassword() {
     // TODO: implement forgotPassword
     throw UnimplementedError();
   }
 
   @override
-  Future login(Map<String, dynamic> data) async {
-    dynamic data;
+  Future<GeneralResponse> login(Map<String, dynamic> body) async {
+    print('lets login! ${BASE_URL}/login');
+    print(_apiService);
+    Map<String, dynamic> apiResponse =
+        await _apiService.post(url: '$BASE_URL/login', body: body);
+    print('API RESPONSE');
+    GeneralResponse response;
     try {
-      data = await _requestApi.post(url: null, body: null);
+      response = GeneralResponse.fromJson(apiResponse);
+      print(apiResponse);
+      return response;
     } catch (e) {
-      
+      throw e;
     }
+    //return Future.value(data);
   }
 
   @override
-  Future logout() {
+  Future<GeneralResponse> logout() {
     // TODO: implement logout
     throw UnimplementedError();
   }
